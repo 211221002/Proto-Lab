@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Project</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<style>
+    body {
+        background-image: url('static/newproject.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+</style>
+
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6 mx-auto">
+            </div>
+            <div class="col-md-6 mx-auto">
+                <h2>Create New Project</h2>
+                <form method="post" action="{{ url_for('newproject') }}" onsubmit="return validateForm()">
+                    <div class="form-group">
+                        <label for="project_name">Project Name:</label>
+                        <input type="text" class="form-control" id="project_name" name="project_name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="project_description">Project Description:</label>
+                        <textarea class="form-control" id="project_description" name="project_description"
+                            rows="3"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="members">Members:</label>
+                        <select class="form-control" id="members" name="members" required>
+                            {% for user in users %}
+                            <option value="{{ user.name }}">{{ user.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="roles">Roles:</label>
+                        <select class="form-control" id="roles" name="roles" required>
+                            <option value="developer">Developer</option>
+                            <option value="designer">Designer</option>
+                            <option value="tester">Tester</option>
+                        </select>
+                    </div>
+                    <input type="hidden" id="selectedMembersData" name="selectedMembersData">
+                    <button type="button" class="btn btn-primary" onclick="addMember()">Add Member</button>
+                    <button type="button" class="btn btn-danger" onclick="clearTable()">Clear Table</button>
+                    <button type="submit" class="btn btn-success">Create Project</button>
+                </form>
+
+                <h3>Selected Members</h3>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Role</th>
+                        </tr>
+                    </thead>
+                    <tbody id="selectedMembersTable"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% include 'footer.html' %}
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        function addMember() {
+            var membersDropdown = document.getElementById("members");
+            var rolesDropdown = document.getElementById("roles");
+            var selectedMembersTable = document.getElementById("selectedMembersTable");
+            var selectedMembersDataInput = document.getElementById("selectedMembersData");
+
+            var memberName = membersDropdown.value;
+            var roleName = rolesDropdown.value;
+
+            // cek jika member sudah ada 
+            if (isMemberAlreadyAdded(memberName, selectedMembersTable)) {
+                alert("Member with this name is already added.");
+                return;
+            }
+
+            var memberData = memberName + ',' + roleName;
+
+            // menambahkan ke hidden field input
+            selectedMembersDataInput.value += memberData + ';';
+
+            // Table row
+            var newRow = selectedMembersTable.insertRow();
+            var cell1 = newRow.insertCell(0);
+            var cell2 = newRow.insertCell(1);
+
+            cell1.innerHTML = memberName;
+            cell2.innerHTML = roleName;
+        }
+
+        function isMemberAlreadyAdded(memberName, table) {
+            // cek jika memebr sudah ada 
+            for (var i = 0; i < table.rows.length; i++) {
+                var existingMemberName = table.rows[i].cells[0].innerHTML.trim();
+                if (existingMemberName === memberName) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function clearTable() {
+            var selectedMembersTable = document.getElementById("selectedMembersTable");
+            var selectedMembersDataInput = document.getElementById("selectedMembersData");
+
+            // hapus data di tabel
+            while (selectedMembersTable.rows.length > 0) {
+                selectedMembersTable.deleteRow(0);
+            }
+
+            selectedMembersDataInput.value = '';
+        }
+
+        function validateForm() {
+            var selectedMembersTable = document.getElementById("selectedMembersTable");
+
+            if (selectedMembersTable.rows.length === 0) {
+                alert("Please add at least one member to the project.");
+                return false;
+            }
+            
+            return true;
+        }
+        
+    </script>
+
+</body>
+
+</html>

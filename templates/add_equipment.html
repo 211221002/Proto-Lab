@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Equipment</title>
+
+    <!-- Add Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<style>
+    body {
+        background-image: url('static/profile.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+</style>
+
+<body>
+    {% include 'navbar.html' %}
+
+    <h1 class="mb-4" style="text-align: center;">Add Equipment</h1>
+    <div class="container mt-5">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="alert alert-dismissible {% for message in messages %}{% if 'danger' in message %}alert-danger{% elif 'success' in message %}alert-success{% endif %}{% endfor %}">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <ul class="mb-0">
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <form method="post" action="{{ url_for('add_equipment') }}" class="mb-4">
+        <div class="form-group">
+            <label for="equipment_name">Equipment Name:</label>
+            <input type="text" id="equipment_name" name="equipment_name" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label for="equipment_quantity">Quantity:</label>
+            <input type="number" id="equipment_quantity" name="equipment_quantity" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Add Equipment</button>
+    </form>
+    
+
+    <!-- "Back to Home" button -->
+    <a href="{{ url_for('home') }}" class="btn btn-secondary">Back to Home</a>
+</div>
+{% include 'footer.html' %}
+    <!-- Add Bootstrap JS and Popper.js (required for Bootstrap dropdowns and other components) -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<style>
+    body {
+        background-image: url('static/home.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+    .card {
+        margin-bottom: 20px;
+    }
+</style>
+
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="container mt-5 text-center">
+        <h2>Welcome, {{ user_data.name }}!</h2>
+        <p>Ini adalah halaman Beranda.</p>
+        <h3>Projects yang sedang berlangsung:</h3><br><br>
+        {% if projects_data %}
+        <div class="row justify-content-center">
+            {% for project in projects_data %}
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-block">
+                        <br>
+                        <h5 class="card-title">{{ project.project_name }}</h5>
+                        <p class="card-text">{{ project.project_description }}</p>
+                        <p class="card-text">Members:</p>
+                        <ul>
+                            {% for member in project.members %}
+                            <li style="text-align: left;">{{ member.name }} - {{ member.role }}</li>
+                            {% endfor %}
+                        </ul>
+
+                        <div class="text-center">
+                            {% if user_data.role == "admin" %}
+                            <form action="/delete_project" method="post" class="d-inline-block">
+                                <input type="hidden" name="project_id" value="{{ project._id }}">
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                            {% endif %}
+
+                            <button class="btn btn-primary" data-toggle="modal"
+                                data-target="#joinModal{{ project._id }}" class="d-inline-block">
+                                Join
+                            </button>
+                            <br><br>
+                        </div>
+
+                        <div class="modal fade" id="joinModal{{ project._id }}" tabindex="-1" role="dialog"
+                            aria-labelledby="joinModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="joinModalLabel">Join Project</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="/join_project" method="post">
+                                            <div class="form-group">
+                                                <label for="name">Your Name</label>
+                                                <input type="text" class="form-control" id="name" name="name"
+                                                    value="{{ user_data.name }}" readonly>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="role">Your Role</label>
+                                                <select class="form-control" id="role" name="role" required>
+                                                    <option value="developer">Developer</option>
+                                                    <option value="designer">Designer</option>
+                                                    <option value="tester">Tester</option>
+                                                </select>
+                                            </div>
+                                            <input type="hidden" name="project_id" value="{{ project._id }}">
+                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>Saat ini sedang tidak ada project yang berlangsung.</p>
+        {% endif %}
+    </div>
+    {% include 'footer.html' %}
+
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

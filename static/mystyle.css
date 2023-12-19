@@ -1,0 +1,35 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.container {
+    padding-top: 50px;
+}
+
+.card {
+    margin-top: 20px;
+}
+
+.alert {
+    margin-top: 10px;
+}
+
+.navbar {
+    margin-bottom: 20px;
+}
+
+
+body {
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+.card {
+    max-width: 400px;
+    margin: auto; 
+    overflow-y: auto;
+    max-height: 80vh; 
+}

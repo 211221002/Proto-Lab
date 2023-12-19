@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<style>
+    body {
+        background-image: url('static/profile.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+    .btn-secondary {
+        margin-bottom: 20px;
+    }
+
+    .btn-primary {
+        margin-bottom: 20px;
+    }
+</style>
+
+<body>
+    {% include 'navbar.html' %}
+    <div class="container light-style flex-grow-1 container-p-y">
+        <h4 class="font-weight-bold py-3 mb-4" style="text-align: center;">
+            Account settings
+        </h4>
+        <div class="card overflow-hidden">
+            <div class="row no-gutters row-bordered row-border-light">
+                <div class="col-md-2 pt-0">
+                </div>
+                <div class="col-md-9">
+                    <div class="tab-content">
+                        <div class="tab-pane fade active show" id="account-general">
+                            <div class="card-body media align-items-center">
+                                {% if user['photo'] %}
+                                <img src="{{ url_for('static', filename=user['photo']) }}" alt="User Photo" width="200"
+                                    height="200">
+                                {% else %}
+                                <img src="{{ url_for('static', filename='profile_sementara.png') }}" alt="Default Photo"
+                                    width="200" height="200">
+                                {% endif %}
+                            </div>
+                            <hr class="border-light m-0">
+                            <div class="card-body">
+                                <form method="post" action="{{ url_for('edit_profile') }}"
+                                    enctype="multipart/form-data">
+                                    <input type="hidden" name="existing_photo" value="{{ user['photo'] }}">
+                                    <div class="form-group">
+                                        <label class="btn btn-outline-primary">
+                                            Upload new photo
+                                            <input type="file" class="account-settings-fileinput" name="photo">
+                                        </label> &nbsp;
+                                        <div class="text-light small mt-1">Allowed JPG, GIF, or PNG. Max size of 800K
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="name">Name:</label>
+                                        <input type="text" class="form-control" id="name" name="name"
+                                            value="{{ user['name'] }}" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="email">Email:</label>
+                                        <input type="email" class="form-control" id="email" name="email"
+                                            value="{{ user['email'] }}" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="role">Role:</label>
+                                        <input type="text" class="form-control" id="role" name="role"
+                                            value="{{ user['role'] }}" readonly>
+                                    </div>
+                            </div>
+                            <div class="card-body pb-2">
+                                <div class="form-group">
+                                    <label class="form-label">Bio</label>
+                                    <textarea id="bio" class="form-control" rows="5"
+                                        name="bio">{{ user['bio'] }}</textarea>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <a href="{{ url_for('profile') }}" class="btn btn-secondary">Back</a>
+                            </form>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include 'footer.html' %}
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

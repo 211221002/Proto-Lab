@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Borrow Equipment</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<style>
+    body {
+        background-image: url('static/borrow.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+    .card {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+
+    .btn-primary {
+        margin-left: 20px;
+        margin-bottom: 20px;
+    }
+</style>
+
+<body>
+    {% include 'navbar.html' %}
+    {% if alert_message %}
+    <script>
+        alert("{{ alert_message }}");
+        window.location.href = "{{ url_for('home') }}";
+    </script>
+    {% endif %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <div class="alert alert-{{ messages[0].category }}">
+                    {{ messages[0] }}
+                </div>
+                {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <br>
+                <h2 class="text-center">Borrowed Equipment</h2>
+                <div class="card">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Equipment Name</th>
+                                <th>Quantity</th>
+                                <th>Borrower Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in borrowed_equipment %}
+                            <tr>
+                                <td>{{ item.equipment_name }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>{{ item.user_name }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <section class="col-md-6">
+                <br>
+                <h2 class="text-center">Borrow Equipment Form</h2>
+                <div class="card">
+                    <form method="post" action="{{ url_for('borrow_equipment_page') }}">
+                        <div class="form-group">
+                            <strong for="name">Nama peminjam:</strong>
+                            <input type="text" id="name" name="name" value="{{ user_data['name'] }}" readonly
+                                class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <strong for="equipment">Equipment:</strong>
+                            <select id="equipment" name="equipment" required class="form-control">
+                                {% for item in equipment %}
+                                <option value="{{ item.name }}">{{ item.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <strong for="quantity">Quantity:</strong>
+                            <div class="input-group">
+                                <input type="number" id="quantity" name="quantity" min="1" required
+                                    class="form-control">
+                                <span class="input-group-addon"> &nbsp; pcs </span>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Borrow</button>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </div>
+    {% include 'footer.html' %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const equipmentDropdown = document.getElementById('equipment');
+            const quantityInput = document.getElementById('quantity');
+            const borrowForm = document.getElementById('borrowForm');
+
+            // Fetch equipment data dari server
+            fetch('/get_equipment_data')
+                .then(response => response.json())
+                .then(data => {
+                    // Perbarui input kuantitas berdasarkan peralatan yang dipilih
+                    equipmentDropdown.addEventListener('change', function () {
+                        const selectedEquipment = this.value;
+                        const selectedEquipmentData = data.equipment.find(item => item.name === selectedEquipment);
+
+                        // Tetapkan atribut maks untuk input kuantitas
+                        quantityInput.max = selectedEquipmentData.quantity;
+                    });
+                })
+                .catch(error => console.error('Error fetching equipment data:', error));
+
+            // Cegah pengiriman formulir jika kuantitas lebih besar dari kuantitas yang tersedia
+            borrowForm.addEventListener('submit', function (event) {
+                const selectedEquipment = equipmentDropdown.value;
+                const selectedEquipmentData = data.equipment.find(item => item.name === selectedEquipment);
+                const selectedQuantity = parseInt(quantityInput.value, 10);
+
+                if (selectedQuantity > selectedEquipmentData.quantity) {
+                    alert('Quantity cannot be greater than available quantity.');
+                    event.preventDefault();  // Cegah pengiriman formulir
+                }
+            });
+        });
+    </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
